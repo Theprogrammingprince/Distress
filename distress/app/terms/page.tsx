@@ -16,7 +16,7 @@ export default function TermsPage() {
                     <h1 className="text-4xl font-bold mb-4">
                         Terms of <span className="italic font-light">Service</span>
                     </h1>
-                    <p className="text-gray-600">Last updated: December 15, 2024</p>
+                    <p className="text-gray-600">Last updated: December 15, 2026</p>
                 </motion.div>
 
                 <motion.div

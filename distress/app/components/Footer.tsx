@@ -173,7 +173,7 @@ export default function Footer() {
                     </div>
 
                     <p className="text-xs text-gray-500 text-center">
-                        © 2024 Distress. All rights reserved. Premium products at unbeatable prices.
+                        © 2026 Distress. All rights reserved. Premium products at unbeatable prices.
                     </p>
                 </motion.div>
             </div>

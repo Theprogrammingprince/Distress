@@ -16,7 +16,7 @@ export default function PrivacyPage() {
                     <h1 className="text-4xl font-bold mb-4">
                         Privacy <span className="italic font-light">Policy</span>
                     </h1>
-                    <p className="text-gray-600">Last updated: December 15, 2024</p>
+                    <p className="text-gray-600">Last updated: December 15, 2026</p>
                 </motion.div>
 
                 <motion.div
