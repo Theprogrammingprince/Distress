@@ -33,19 +33,19 @@ export default function Footer() {
                         </p>
                     </div>
 
-                    {/* Category Links */}
+                    {/* Quick Links */}
                     <div className="flex flex-col sm:flex-row gap-4 sm:gap-8 text-sm">
-                        <Link href="/furniture" className="text-gray-600 hover:text-gray-900 transition-colors">
-                            Furniture
+                        <Link href="/track-order" className="text-gray-600 hover:text-gray-900 transition-colors">
+                            Track Order
                         </Link>
-                        <Link href="/electronics" className="text-gray-600 hover:text-gray-900 transition-colors">
-                            Electronics
+                        <Link href="/shipping" className="text-gray-600 hover:text-gray-900 transition-colors">
+                            Shipping Info
                         </Link>
-                        <Link href="/home-decor" className="text-gray-600 hover:text-gray-900 transition-colors">
-                            Home Decor
+                        <Link href="/returns" className="text-gray-600 hover:text-gray-900 transition-colors">
+                            Returns
                         </Link>
-                        <Link href="/deals" className="text-gray-600 hover:text-gray-900 transition-colors">
-                            Deals
+                        <Link href="/faq" className="text-gray-600 hover:text-gray-900 transition-colors">
+                            FAQ
                         </Link>
                     </div>
                 </motion.div>
@@ -126,7 +126,7 @@ export default function Footer() {
                     </div>
                 </motion.div>
 
-                {/* Copyright */}
+                {/* Additional Footer Links */}
                 <motion.div
                     className="mt-12 pt-8 border-t border-gray-200"
                     initial="hidden"
@@ -134,6 +134,44 @@ export default function Footer() {
                     viewport={{ once: true }}
                     variants={fadeInUp}
                 >
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-8">
+                        <div>
+                            <h3 className="font-semibold text-gray-900 mb-4">Shop</h3>
+                            <ul className="space-y-2 text-sm">
+                                <li><Link href="/shop" className="text-gray-600 hover:text-gray-900">All Products</Link></li>
+                                <li><Link href="/bestsellers" className="text-gray-600 hover:text-gray-900">Bestsellers</Link></li>
+                                <li><Link href="/deals" className="text-gray-600 hover:text-gray-900">Deals</Link></li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h3 className="font-semibold text-gray-900 mb-4">Support</h3>
+                            <ul className="space-y-2 text-sm">
+                                <li><Link href="/contact" className="text-gray-600 hover:text-gray-900">Contact Us</Link></li>
+                                <li><Link href="/faq" className="text-gray-600 hover:text-gray-900">FAQ</Link></li>
+                                <li><Link href="/shipping" className="text-gray-600 hover:text-gray-900">Shipping</Link></li>
+                                <li><Link href="/returns" className="text-gray-600 hover:text-gray-900">Returns</Link></li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h3 className="font-semibold text-gray-900 mb-4">Company</h3>
+                            <ul className="space-y-2 text-sm">
+                                <li><Link href="/about" className="text-gray-600 hover:text-gray-900">About Us</Link></li>
+                                <li><Link href="/careers" className="text-gray-600 hover:text-gray-900">Careers</Link></li>
+                                <li><Link href="/privacy" className="text-gray-600 hover:text-gray-900">Privacy Policy</Link></li>
+                                <li><Link href="/terms" className="text-gray-600 hover:text-gray-900">Terms of Service</Link></li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h3 className="font-semibold text-gray-900 mb-4">Account</h3>
+                            <ul className="space-y-2 text-sm">
+                                <li><Link href="/signin" className="text-gray-600 hover:text-gray-900">Sign In</Link></li>
+                                <li><Link href="/signup" className="text-gray-600 hover:text-gray-900">Sign Up</Link></li>
+                                <li><Link href="/track-order" className="text-gray-600 hover:text-gray-900">Track Order</Link></li>
+                                <li><Link href="/wishlist" className="text-gray-600 hover:text-gray-900">Wishlist</Link></li>
+                            </ul>
+                        </div>
+                    </div>
+
                     <p className="text-xs text-gray-500 text-center">
                         © 2024 Distress. All rights reserved. Premium products at unbeatable prices.
                     </p>
