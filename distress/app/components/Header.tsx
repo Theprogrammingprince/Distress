@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { Search, ShoppingCart, User, Menu, X } from 'lucide-react';
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import Image from 'next/image';
 
 export default function Header() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -21,7 +22,16 @@ export default function Header() {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex items-center justify-between h-16">
                     {/* Logo */}
-                    <Link href="/" className="flex items-center">
+                    <Link href="/" className="flex items-center gap-2">
+                        <div className="w-8 h-8 relative">
+                            <Image
+                                src="/logo.png"
+                                alt="Distress"
+                                width={32}
+                                height={32}
+                                className="object-contain"
+                            />
+                        </div>
                         <motion.span
                             className="text-2xl font-bold text-gray-900"
                             whileHover={{ scale: 1.05 }}
