@@ -19,8 +19,13 @@ export const metadata: Metadata = {
   title: "Distress - Premium Products at Unbeatable Prices",
   description: "Shop quality furniture, electronics, and home decor at distress sale prices. Save up to 60% on premium brands.",
   icons: {
-    icon: '/logo.png',
+    icon: [
+      { url: '/logo.png', sizes: 'any' },
+      { url: '/logo.png', sizes: '16x16', type: 'image/png' },
+      { url: '/logo.png', sizes: '32x32', type: 'image/png' },
+    ],
     apple: '/logo.png',
+    shortcut: '/logo.png',
   },
 };
 
@@ -31,6 +36,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <link rel="icon" href="/logo.png" type="image/png" />
+        <link rel="apple-touch-icon" href="/logo.png" />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
