@@ -3,36 +3,39 @@
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Search, ShoppingCart, User, Menu, X, Camera, TrendingUp } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { Search, ShoppingCart, User, Menu, X, Camera, TrendingUp, Gift, Sofa, Smartphone, Home as HomeIcon, Tag, UtensilsCrossed, Trees, Briefcase, DollarSign } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const searchCategories = [
-    { name: 'Free Gifts For New Users', icon: '🎁' },
-    { name: 'Furniture', icon: '🛋️' },
-    { name: 'Electronics', icon: '📱' },
-    { name: 'Home Decor Items', icon: '🏠' },
-    { name: 'Clearance Sale', icon: '🏷️' },
-    { name: 'Kitchen Appliances', icon: '🍳' },
-    { name: 'Outdoor & Garden', icon: '🌿' },
-    { name: 'Office Supplies', icon: '📎' },
-    { name: 'Deals Under $50', icon: '💰' }
+    { name: 'Free Gifts For New Users', icon: Gift, href: '/shop?category=gifts' },
+    { name: 'Furniture', icon: Sofa, href: '/shop?category=furniture' },
+    { name: 'Electronics', icon: Smartphone, href: '/shop?category=electronics' },
+    { name: 'Home Decor Items', icon: HomeIcon, href: '/shop?category=home-decor' },
+    { name: 'Clearance Sale', icon: Tag, href: '/shop?category=clearance' },
+    { name: 'Kitchen Appliances', icon: UtensilsCrossed, href: '/shop?category=kitchen' },
+    { name: 'Outdoor & Garden', icon: Trees, href: '/shop?category=outdoor' },
+    { name: 'Office Supplies', icon: Briefcase, href: '/shop?category=office' },
+    { name: 'Deals Under $50', icon: DollarSign, href: '/shop?category=deals' }
 ];
 
 const trendingProducts = [
-    { name: 'Air Purifier', image: '/images/img (1).jpg', category: 'Home Appliances' },
-    { name: 'Humidifier', image: '/images/img (2).jpg', category: 'Home Appliances' },
-    { name: 'Modern Sofa', image: '/images/img (3).jpg', category: 'Furniture' },
-    { name: 'Electric Hair Brush', image: '/images/img (4).jpg', category: 'Personal Care' },
-    { name: 'Hair Dryer', image: '/images/img (5).jpg', category: 'Personal Care' },
-    { name: 'Dehumidifier', image: '/images/img (6).jpg', category: 'Home Appliances' },
-    { name: 'Pressure Cooker', image: '/images/img (7).jpg', category: 'Kitchen' },
-    { name: 'Electric Shaver', image: '/images/img (8).jpg', category: 'Personal Care' }
+    { name: 'Air Purifier', image: '/images/img (1).jpg', category: 'Home Appliances', price: 89.99 },
+    { name: 'Humidifier', image: '/images/img (2).jpg', category: 'Home Appliances', price: 49.99 },
+    { name: 'Modern Sofa', image: '/images/img (3).jpg', category: 'Furniture', price: 299.99 },
+    { name: 'Electric Hair Brush', image: '/images/img (4).jpg', category: 'Personal Care', price: 34.99 },
+    { name: 'Hair Dryer', image: '/images/img (5).jpg', category: 'Personal Care', price: 39.99 },
+    { name: 'Dehumidifier', image: '/images/img (6).jpg', category: 'Home Appliances', price: 79.99 },
+    { name: 'Pressure Cooker', image: '/images/img (7).jpg', category: 'Kitchen', price: 69.99 },
+    { name: 'Electric Shaver', image: '/images/img (8).jpg', category: 'Personal Care', price: 44.99 }
 ];
 
 export default function Header() {
+    const router = useRouter();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isSearchOpen, setIsSearchOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
+    const [filteredProducts, setFilteredProducts] = useState(trendingProducts);
     const searchRef = useRef<HTMLDivElement>(null);
 
     const navLinks = [
@@ -42,6 +45,19 @@ export default function Header() {
         { href: '/deals', label: 'Deals' },
         { href: '/about', label: 'About' }
     ];
+
+    // Filter products based on search query
+    useEffect(() => {
+        if (searchQuery.trim()) {
+            const filtered = trendingProducts.filter(product =>
+                product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                product.category.toLowerCase().includes(searchQuery.toLowerCase())
+            );
+            setFilteredProducts(filtered);
+        } else {
+            setFilteredProducts(trendingProducts);
+        }
+    }, [searchQuery]);
 
     // Close search when clicking outside
     useEffect(() => {
@@ -54,6 +70,14 @@ export default function Header() {
         document.addEventListener('mousedown', handleClickOutside);
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
+
+    const handleSearch = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (searchQuery.trim()) {
+            router.push(`/search?q=${encodeURIComponent(searchQuery)}`);
+            setIsSearchOpen(false);
+        }
+    };
 
     return (
         <header className="sticky top-0 z-50 w-full bg-white/95 backdrop-blur-md border-b border-gray-100">
@@ -93,23 +117,25 @@ export default function Header() {
 
                     {/* Search Bar */}
                     <div className="flex-1 max-w-xl mx-4 relative" ref={searchRef}>
-                        <div className="relative">
-                            <input
-                                type="text"
-                                placeholder="Search for products..."
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                                onFocus={() => setIsSearchOpen(true)}
-                                className="w-full pl-10 pr-12 py-2.5 border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent bg-gray-50"
-                            />
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                            <button className="absolute right-3 top-1/2 -translate-y-1/2 p-1.5 bg-gray-900 hover:bg-gray-800 text-white rounded-full transition-colors">
-                                <Search className="w-4 h-4" />
-                            </button>
-                            <button className="absolute right-14 top-1/2 -translate-y-1/2 p-1.5 hover:bg-gray-100 rounded-full transition-colors">
-                                <Camera className="w-5 h-5 text-gray-600" />
-                            </button>
-                        </div>
+                        <form onSubmit={handleSearch}>
+                            <div className="relative">
+                                <input
+                                    type="text"
+                                    placeholder="Search for products..."
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    onFocus={() => setIsSearchOpen(true)}
+                                    className="w-full pl-10 pr-10 py-2.5 border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent bg-gray-50"
+                                />
+                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                                <button
+                                    type="submit"
+                                    className="absolute right-3 top-1/2 -translate-y-1/2 p-1.5 bg-gray-900 hover:bg-gray-800 text-white rounded-full transition-colors"
+                                >
+                                    <Search className="w-4 h-4" />
+                                </button>
+                            </div>
+                        </form>
 
                         {/* Search Dropdown */}
                         <AnimatePresence>
@@ -118,7 +144,7 @@ export default function Header() {
                                     initial={{ opacity: 0, y: -10 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     exit={{ opacity: 0, y: -10 }}
-                                    className="absolute top-full left-0 right-0 mt-2 bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden"
+                                    className="absolute top-full left-0 right-0 mt-2 bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden max-h-[600px] overflow-y-auto"
                                 >
                                     <div className="p-4">
                                         {/* Discover More Section */}
@@ -128,11 +154,12 @@ export default function Header() {
                                                 {searchCategories.map((category) => (
                                                     <Link
                                                         key={category.name}
-                                                        href={`/shop?category=${category.name.toLowerCase()}`}
-                                                        className="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 rounded-lg transition-colors"
+                                                        href={category.href}
+                                                        onClick={() => setIsSearchOpen(false)}
+                                                        className="flex items-center gap-3 px-3 py-2 hover:bg-gray-50 rounded-lg transition-colors group"
                                                     >
-                                                        <span className="text-lg">{category.icon}</span>
-                                                        <span className="text-sm text-gray-700">{category.name}</span>
+                                                        <category.icon className="w-5 h-5 text-gray-600 group-hover:text-teal-600 transition-colors" />
+                                                        <span className="text-sm text-gray-700 group-hover:text-teal-600 transition-colors">{category.name}</span>
                                                     </Link>
                                                 ))}
                                             </div>
@@ -141,33 +168,56 @@ export default function Header() {
                                         {/* Trending Products */}
                                         <div className="border-t border-gray-100 pt-4">
                                             <div className="flex items-center justify-between mb-3">
-                                                <h3 className="text-sm font-semibold text-gray-900">Trending Products</h3>
-                                                <Link href="/shop" className="text-xs text-teal-600 hover:text-teal-700 flex items-center gap-1">
+                                                <h3 className="text-sm font-semibold text-gray-900">
+                                                    {searchQuery ? 'Search Results' : 'Trending Products'}
+                                                </h3>
+                                                <Link
+                                                    href="/shop"
+                                                    onClick={() => setIsSearchOpen(false)}
+                                                    className="text-xs text-teal-600 hover:text-teal-700 flex items-center gap-1"
+                                                >
                                                     Other recommendations
                                                     <TrendingUp className="w-3 h-3" />
                                                 </Link>
                                             </div>
-                                            <div className="grid grid-cols-4 gap-3">
-                                                {trendingProducts.slice(0, 8).map((product, index) => (
+
+                                            {filteredProducts.length > 0 ? (
+                                                <div className="grid grid-cols-4 gap-3">
+                                                    {filteredProducts.slice(0, 8).map((product, index) => (
+                                                        <Link
+                                                            key={index}
+                                                            href={`/products/${index + 1}`}
+                                                            onClick={() => setIsSearchOpen(false)}
+                                                            className="group"
+                                                        >
+                                                            <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden mb-2">
+                                                                <Image
+                                                                    src={product.image}
+                                                                    alt={product.name}
+                                                                    width={120}
+                                                                    height={120}
+                                                                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                                                                />
+                                                            </div>
+                                                            <p className="text-xs text-gray-900 font-medium line-clamp-1">{product.name}</p>
+                                                            <p className="text-xs text-gray-500">{product.category}</p>
+                                                            <p className="text-xs font-bold text-teal-600">${product.price}</p>
+                                                        </Link>
+                                                    ))}
+                                                </div>
+                                            ) : (
+                                                <div className="text-center py-8">
+                                                    <Search className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+                                                    <p className="text-sm text-gray-600 mb-2">No products found for "{searchQuery}"</p>
                                                     <Link
-                                                        key={index}
-                                                        href={`/products/${index + 1}`}
-                                                        className="group"
+                                                        href={`/search?q=${encodeURIComponent(searchQuery)}`}
+                                                        onClick={() => setIsSearchOpen(false)}
+                                                        className="text-sm text-teal-600 hover:text-teal-700 font-medium"
                                                     >
-                                                        <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden mb-2">
-                                                            <Image
-                                                                src={product.image}
-                                                                alt={product.name}
-                                                                width={120}
-                                                                height={120}
-                                                                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                                                            />
-                                                        </div>
-                                                        <p className="text-xs text-gray-900 font-medium line-clamp-1">{product.name}</p>
-                                                        <p className="text-xs text-gray-500">{product.category}</p>
+                                                        View all search results →
                                                     </Link>
-                                                ))}
-                                            </div>
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
                                 </motion.div>

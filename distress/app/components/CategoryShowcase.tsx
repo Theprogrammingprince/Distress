@@ -3,15 +3,15 @@
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Star, ShoppingBag } from 'lucide-react';
+import { Star, ShoppingBag, Sofa, Smartphone, Home as HomeIcon, UtensilsCrossed, Sparkles, Trees } from 'lucide-react';
 
 const categories = [
-    { name: 'Furniture', icon: '🛋️', count: '250+ items', image: '/images/img (3).jpg', color: 'from-blue-500 to-blue-600' },
-    { name: 'Electronics', icon: '📱', count: '180+ items', image: '/images/img (1).jpg', color: 'from-purple-500 to-purple-600' },
-    { name: 'Home Decor', icon: '🏠', count: '320+ items', image: '/images/img (8).jpg', color: 'from-pink-500 to-pink-600' },
-    { name: 'Kitchen', icon: '🍳', count: '150+ items', image: '/images/img (7).jpg', color: 'from-green-500 to-green-600' },
-    { name: 'Personal Care', icon: '💆', count: '200+ items', image: '/images/img (5).jpg', color: 'from-amber-500 to-amber-600' },
-    { name: 'Outdoor', icon: '🌿', count: '120+ items', image: '/images/img (2).jpg', color: 'from-teal-500 to-teal-600' },
+    { name: 'Furniture', icon: Sofa, count: '250+ items', image: '/images/img (3).jpg', color: 'from-blue-500 to-blue-600' },
+    { name: 'Electronics', icon: Smartphone, count: '180+ items', image: '/images/img (1).jpg', color: 'from-purple-500 to-purple-600' },
+    { name: 'Home Decor', icon: HomeIcon, count: '320+ items', image: '/images/img (8).jpg', color: 'from-pink-500 to-pink-600' },
+    { name: 'Kitchen', icon: UtensilsCrossed, count: '150+ items', image: '/images/img (7).jpg', color: 'from-green-500 to-green-600' },
+    { name: 'Personal Care', icon: Sparkles, count: '200+ items', image: '/images/img (5).jpg', color: 'from-amber-500 to-amber-600' },
+    { name: 'Outdoor', icon: Trees, count: '120+ items', image: '/images/img (2).jpg', color: 'from-teal-500 to-teal-600' },
 ];
 
 export default function CategoryShowcase() {
@@ -58,7 +58,7 @@ export default function CategoryShowcase() {
 
                                     {/* Content */}
                                     <div className="absolute inset-0 flex flex-col items-center justify-center p-4 text-white">
-                                        <span className="text-4xl mb-2">{category.icon}</span>
+                                        <category.icon className="w-12 h-12 mb-3" strokeWidth={1.5} />
                                         <h3 className="font-bold text-lg mb-1 text-center">{category.name}</h3>
                                         <p className="text-xs opacity-90">{category.count}</p>
                                     </div>
