@@ -1,0 +1,29 @@
+{
+    "name": "distress-backend",
+    "version": "1.0.0",
+    "description": "Supabase Edge Functions for Distress E-commerce",
+    "scripts": {
+        "deploy": "supabase functions deploy",
+        "deploy:products": "supabase functions deploy products",
+        "deploy:orders": "supabase functions deploy orders",
+        "deploy:cart": "supabase functions deploy cart",
+        "deploy:search": "supabase functions deploy search",
+        "deploy:users": "supabase functions deploy users",
+        "deploy:invoices": "supabase functions deploy invoices",
+        "deploy:analytics": "supabase functions deploy analytics",
+        "deploy:all": "for func in products orders cart search users invoices analytics; do supabase functions deploy $func; done",
+        "test": "deno run --allow-net --allow-env test-endpoints.ts",
+        "db:push": "supabase db push",
+        "db:reset": "supabase db reset",
+        "link": "supabase link",
+        "status": "supabase status"
+    },
+    "keywords": [
+        "supabase",
+        "edge-functions",
+        "deno",
+        "ecommerce"
+    ],
+    "author": "Distress Team",
+    "license": "MIT"
+}

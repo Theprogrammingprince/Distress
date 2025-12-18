@@ -4,6 +4,8 @@ import "./globals.css";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import { ThemeProvider } from "next-themes";
+import { QueryProvider } from "../lib/providers/QueryProvider";
+import { ToastProvider } from "../lib/providers/ToastProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -43,11 +45,14 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
-          <Header />
-          {children}
-          <Footer />
-        </ThemeProvider>
+        <QueryProvider>
+          <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
+            <ToastProvider />
+            <Header />
+            {children}
+            <Footer />
+          </ThemeProvider>
+        </QueryProvider>
       </body>
     </html>
   );
