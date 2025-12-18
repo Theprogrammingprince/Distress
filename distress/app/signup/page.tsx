@@ -1,13 +1,18 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Mail, Lock, User, Eye, EyeOff, Phone, MapPin, FileText, Fingerprint, Building2 } from 'lucide-react';
 import Link from 'next/link';
+import { useSignUp } from '../../lib/hooks/useAuth';
+import toast from 'react-hot-toast';
 
 type UserType = 'buyer' | 'client' | null;
 
 export default function SignUpPage() {
+    const router = useRouter();
+    const signUp = useSignUp();
     const [showPassword, setShowPassword] = useState(false);
     const [userType, setUserType] = useState<UserType>(null);
     const [formData, setFormData] = useState({
@@ -22,6 +27,39 @@ export default function SignUpPage() {
         businessName: '',
         businessRegNumber: ''
     });
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+
+        // Show loading toast
+        const loadingToast = toast.loading('Creating your account...');
+
+        try {
+            await signUp.mutateAsync({
+                email: formData.email,
+                password: formData.password,
+                full_name: formData.fullName,
+                phone: formData.phone,
+            });
+
+            // Dismiss loading and show success
+            toast.dismiss(loadingToast);
+            toast.success(`🎉 Welcome to Distress! Your ${userType} account has been created successfully!`, {
+                duration: 5000,
+            });
+
+            // Redirect after success
+            setTimeout(() => {
+                router.push('/');
+            }, 2000);
+        } catch (error: any) {
+            // Dismiss loading and show error
+            toast.dismiss(loadingToast);
+            toast.error(error.message || 'Failed to create account. Please try again.', {
+                duration: 5000,
+            });
+        }
+    };
 
     return (
         <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4">
@@ -93,7 +131,7 @@ export default function SignUpPage() {
                                 </button>
                             </div>
 
-                            <form className="space-y-4 md:space-y-6">
+                            <form onSubmit={handleSubmit} className="space-y-4 md:space-y-6">
                                 {/* Basic Information */}
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div>
@@ -316,11 +354,12 @@ export default function SignUpPage() {
 
                                 <motion.button
                                     type="submit"
-                                    className="w-full bg-teal-600 hover:bg-teal-700 text-white py-4 rounded-full font-semibold transition-colors"
+                                    disabled={signUp.isPending}
+                                    className="w-full bg-teal-600 hover:bg-teal-700 text-white py-4 rounded-full font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                                     whileHover={{ scale: 1.02 }}
                                     whileTap={{ scale: 0.98 }}
                                 >
-                                    Create {userType === 'buyer' ? 'Buyer' : 'Seller'} Account
+                                    {signUp.isPending ? 'Creating Account...' : `Create ${userType === 'buyer' ? 'Buyer' : 'Seller'} Account`}
                                 </motion.button>
                             </form>
 

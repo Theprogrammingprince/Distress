@@ -6,6 +6,8 @@ import Footer from "./components/Footer";
 import { ThemeProvider } from "next-themes";
 import { ProductsProvider } from "./context/ProductsContext";
 import { WishlistProvider } from "./context/WishlistContext";
+import { QueryProvider } from "../lib/providers/QueryProvider";
+import { ToastProvider } from "../lib/providers/ToastProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -45,15 +47,18 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
-          <ProductsProvider>
-            <WishlistProvider>
-              <Header />
-              {children}
-              <Footer />
-            </WishlistProvider>
-          </ProductsProvider>
-        </ThemeProvider>
+        <QueryProvider>
+          <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
+            <ProductsProvider>
+              <WishlistProvider>
+                <ToastProvider />
+                <Header />
+                {children}
+                <Footer />
+              </WishlistProvider>
+            </ProductsProvider>
+          </ThemeProvider>
+        </QueryProvider>
       </body>
     </html>
   );
