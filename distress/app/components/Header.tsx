@@ -1,10 +1,10 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { Search, ShoppingCart, User, Menu, X, Camera, TrendingUp, Gift, Sofa, Smartphone, Home as HomeIcon, Tag, UtensilsCrossed, Trees, Briefcase, DollarSign } from 'lucide-react';
+import { Search, ShoppingCart, User, Menu, X, TrendingUp, Gift, Sofa, Smartphone, Home as HomeIcon, Tag, UtensilsCrossed, Trees, Briefcase, DollarSign } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const searchCategories = [
@@ -35,7 +35,6 @@ export default function Header() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isSearchOpen, setIsSearchOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
-    const [filteredProducts, setFilteredProducts] = useState(trendingProducts);
     const searchRef = useRef<HTMLDivElement>(null);
 
     const navLinks = [
@@ -46,17 +45,15 @@ export default function Header() {
         { href: '/about', label: 'About' }
     ];
 
-    // Filter products based on search query
-    useEffect(() => {
+    // Use useMemo for derived state instead of useEffect with setState
+    const filteredProducts = useMemo(() => {
         if (searchQuery.trim()) {
-            const filtered = trendingProducts.filter(product =>
+            return trendingProducts.filter(product =>
                 product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                 product.category.toLowerCase().includes(searchQuery.toLowerCase())
             );
-            setFilteredProducts(filtered);
-        } else {
-            setFilteredProducts(trendingProducts);
         }
+        return trendingProducts;
     }, [searchQuery]);
 
     // Close search when clicking outside
@@ -208,7 +205,7 @@ export default function Header() {
                                             ) : (
                                                 <div className="text-center py-8">
                                                     <Search className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-                                                    <p className="text-sm text-gray-600 mb-2">No products found for "{searchQuery}"</p>
+                                                    <p className="text-sm text-gray-600 mb-2">No products found for &quot;{searchQuery}&quot;</p>
                                                     <Link
                                                         href={`/search?q=${encodeURIComponent(searchQuery)}`}
                                                         onClick={() => setIsSearchOpen(false)}

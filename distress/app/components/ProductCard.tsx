@@ -25,9 +25,6 @@ export default function ProductCard({ product }: ProductCardProps) {
         }
     };
 
-    const discount = product.originalPrice
-        ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
-        : 0;
 
     return (
         <motion.div

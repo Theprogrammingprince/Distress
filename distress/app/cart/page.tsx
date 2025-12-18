@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { ShoppingCart, Trash2, Plus, Minus } from 'lucide-react';
+import { Trash2, Plus, Minus } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 

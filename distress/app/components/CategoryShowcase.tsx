@@ -3,7 +3,7 @@
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Star, ShoppingBag, Sofa, Smartphone, Home as HomeIcon, UtensilsCrossed, Sparkles, Trees } from 'lucide-react';
+import { ShoppingBag, Sofa, Smartphone, Home as HomeIcon, UtensilsCrossed, Sparkles, Trees } from 'lucide-react';
 
 const categories = [
     { name: 'Furniture', icon: Sofa, count: '250+ items', image: '/images/img (3).jpg', color: 'from-blue-500 to-blue-600' },

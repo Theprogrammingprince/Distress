@@ -5,7 +5,6 @@ import ProductCard from '../components/ProductCard';
 import { products } from '@/lib/products';
 
 export default function BestsellersPage() {
-    const bestsellers = products.filter(p => p.badge === 'Bestseller');
 
     return (
         <div className="min-h-screen bg-gray-50">

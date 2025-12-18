@@ -5,7 +5,6 @@ import { motion } from 'framer-motion';
 import { Heart, ShoppingBag } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Product } from '@/lib/products';
 
 export default function WishlistPage() {
     const { wishlist, removeFromWishlist } = useWishlist();

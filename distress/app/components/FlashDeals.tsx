@@ -3,7 +3,7 @@
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ArrowRight, Zap, TrendingUp } from 'lucide-react';
+import { ArrowRight, Zap } from 'lucide-react';
 
 const flashDeals = [
     { id: 1, name: 'Modern Sofa Set', price: 299.99, originalPrice: 599.99, discount: 50, image: '/images/img (3).jpg', timeLeft: '2h 15m' },

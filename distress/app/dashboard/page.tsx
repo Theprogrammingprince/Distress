@@ -40,7 +40,7 @@ export default function DashboardOverview() {
         <div>
             <div className="mb-8">
                 <h1 className="text-2xl font-bold text-gray-900 mb-1">Dashboard Overview</h1>
-                <p className="text-sm text-gray-500">Welcome back! Here's what's happening with your store</p>
+                <p className="text-sm text-gray-500">Welcome back! Here&apos;s what&apos;s happening with your store</p>
             </div>
 
             {/* Stats Grid */}

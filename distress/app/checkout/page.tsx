@@ -74,7 +74,7 @@ export default function CheckoutPage() {
                                 <Lock className="w-10 h-10 text-green-600" />
                             </div>
                             <h2 className="text-3xl font-bold mb-4">Order Confirmed!</h2>
-                            <p className="text-gray-600 mb-8">Thank you for your purchase. We'll send you a confirmation email shortly.</p>
+                            <p className="text-gray-600 mb-8">Thank you for your purchase. We&apos;ll send you a confirmation email shortly.</p>
                             <Link href="/">
                                 <button className="bg-teal-600 hover:bg-teal-700 text-white px-8 py-3 rounded-full font-semibold">
                                     Continue Shopping

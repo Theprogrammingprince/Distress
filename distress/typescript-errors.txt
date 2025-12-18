@@ -1,0 +1,16 @@
+﻿lib/hooks/useAuth.ts(3,29): error TS2307: Cannot find module '@tanstack/react-query' or its corresponding type declarations.
+lib/hooks/useCart.ts(3,55): error TS2307: Cannot find module '@tanstack/react-query' or its corresponding type declarations.
+lib/hooks/useOrders.ts(3,55): error TS2307: Cannot find module '@tanstack/react-query' or its corresponding type declarations.
+lib/hooks/useOrders.ts(50,21): error TS7006: Parameter '_' implicitly has an 'any' type.
+lib/hooks/useOrders.ts(50,24): error TS7006: Parameter 'variables' implicitly has an 'any' type.
+lib/hooks/useProducts.ts(3,55): error TS2307: Cannot find module '@tanstack/react-query' or its corresponding type declarations.
+lib/hooks/useProducts.ts(60,21): error TS7006: Parameter '_' implicitly has an 'any' type.
+lib/hooks/useProducts.ts(60,24): error TS7006: Parameter 'variables' implicitly has an 'any' type.
+lib/hooks/useReviews.ts(3,55): error TS2307: Cannot find module '@tanstack/react-query' or its corresponding type declarations.
+lib/hooks/useReviews.ts(26,21): error TS7006: Parameter '_' implicitly has an 'any' type.
+lib/hooks/useReviews.ts(26,24): error TS7006: Parameter 'variables' implicitly has an 'any' type.
+lib/hooks/useWishlist.ts(3,55): error TS2307: Cannot find module '@tanstack/react-query' or its corresponding type declarations.
+lib/providers/QueryProvider.tsx(3,50): error TS2307: Cannot find module '@tanstack/react-query' or its corresponding type declarations.
+lib/providers/QueryProvider.tsx(4,36): error TS2307: Cannot find module '@tanstack/react-query-devtools' or its corresponding type declarations.
+lib/providers/ToastProvider.tsx(3,25): error TS2307: Cannot find module 'react-hot-toast' or its corresponding type declarations.
+lib/supabase.ts(1,30): error TS2307: Cannot find module '@supabase/supabase-js' or its corresponding type declarations.

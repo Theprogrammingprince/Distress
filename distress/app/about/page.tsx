@@ -173,7 +173,7 @@ export default function AboutPage() {
                                 Discover our most popular products loved by thousands of customers. At Distress, we bring you premium quality furniture, electronics, and home decor at unbeatable distress sale prices. Save up to 60% on top brands while enjoying exceptional quality and service.
                             </p>
                             <p className="text-gray-600 leading-relaxed">
-                                Our curated collection features sustainable, eco-friendly products that don't compromise on style or functionality. Every item is carefully inspected to ensure it meets our high standards before reaching your home.
+                                Our curated collection features sustainable, eco-friendly products that don&apos;t compromise on style or functionality. Every item is carefully inspected to ensure it meets our high standards before reaching your home.
                             </p>
                             <Link href="/bestsellers">
                                 <motion.button
@@ -208,7 +208,7 @@ export default function AboutPage() {
                                 Be the first to explore our latest additions! We constantly update our inventory with fresh, exciting products at distress prices. From modern furniture pieces to cutting-edge electronics and stylish home accessories.
                             </p>
                             <p className="text-gray-600 leading-relaxed">
-                                Each new arrival is handpicked for quality, design, and value. Don't miss out on these limited-time opportunities to transform your space with premium products at incredible savings.
+                                Each new arrival is handpicked for quality, design, and value. Don&apos;t miss out on these limited-time opportunities to transform your space with premium products at incredible savings.
                             </p>
                             <Link href="/new-arrivals">
                                 <motion.button
@@ -311,8 +311,8 @@ export default function AboutPage() {
                                             <Star
                                                 key={i}
                                                 className={`w-4 h-4 ${i < Math.floor(testimonial.rating)
-                                                        ? 'fill-amber-400 text-amber-400'
-                                                        : 'fill-gray-300 text-gray-300'
+                                                    ? 'fill-amber-400 text-amber-400'
+                                                    : 'fill-gray-300 text-gray-300'
                                                     }`}
                                             />
                                         ))}

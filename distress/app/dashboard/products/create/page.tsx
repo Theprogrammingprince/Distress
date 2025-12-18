@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import { useProducts } from '@/app/context/ProductsContext';
-import { Upload, X } from 'lucide-react';
+import { Upload } from 'lucide-react';
 import Image from 'next/image';
 
 export default function CreateProductPage() {

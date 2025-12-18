@@ -12,39 +12,37 @@ function EditProductContent() {
     const productId = searchParams.get('id');
     const { getProduct, updateProduct } = useProducts();
 
-    const [selectedImage, setSelectedImage] = useState<string | null>(null);
-    const [selectedSizes, setSelectedSizes] = useState<string[]>(['XS']);
-    const [selectedColors, setSelectedColors] = useState<string[]>(['#FF6B6B']);
+    // Load product data using lazy initialization
+    const product = productId ? getProduct(productId) : null;
+
+    const [selectedImage, setSelectedImage] = useState<string | null>(product?.image || null);
+    const [selectedSizes] = useState<string[]>(['XS']);
+    const [selectedColors] = useState<string[]>(['#FF6B6B']);
     const [formData, setFormData] = useState({
-        productName: '',
-        category: '',
+        productName: product?.name || '',
+        category: product?.category || '',
         brand: '',
         weight: '',
         gender: '',
-        description: '',
-        price: ''
+        description: product?.description || '',
+        price: product?.price.toString() || ''
     });
 
+    // Update form when product loads (only runs once when productId changes)
     useEffect(() => {
-        if (productId) {
-            const product = getProduct(productId);
-            if (product) {
-                setFormData({
-                    productName: product.name,
-                    category: product.category,
-                    brand: '', // Not in Product interface
-                    weight: '', // Not in Product interface
-                    gender: '', // Not in Product interface
-                    description: product.description,
-                    price: product.price.toString()
-                });
-                setSelectedImage(product.image);
-            } else {
-                // Product not found, redirect?
-                // router.push('/dashboard/products');
-            }
+        if (productId && product) {
+            setFormData({
+                productName: product.name,
+                category: product.category,
+                brand: '',
+                weight: '',
+                gender: '',
+                description: product.description,
+                price: product.price.toString()
+            });
+            setSelectedImage(product.image);
         }
-    }, [productId, getProduct]);
+    }, [productId]); // Only depend on productId, not product or getProduct
 
     const sizes = ['XS', 'S', 'M', 'Xl', 'XXL', '3XL'];
     const colors = [
@@ -57,17 +55,6 @@ function EditProductContent() {
         '#000000'  // Black
     ];
 
-    const toggleSize = (size: string) => {
-        setSelectedSizes(prev =>
-            prev.includes(size) ? prev.filter(s => s !== size) : [...prev, size]
-        );
-    };
-
-    const toggleColor = (color: string) => {
-        setSelectedColors(prev =>
-            prev.includes(color) ? prev.filter(c => c !== color) : [...prev, color]
-        );
-    };
 
     const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];

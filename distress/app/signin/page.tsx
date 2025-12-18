@@ -17,7 +17,7 @@ export default function SignInPage() {
     const handleLogin = (e: React.FormEvent) => {
         e.preventDefault();
 
-        // Mock authentication logic
+        // Mock authentication logic by checking email string
         if (formData.email.toLowerCase().includes('seller')) {
             router.push('/dashboard');
         } else {

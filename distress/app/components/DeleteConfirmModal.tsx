@@ -57,7 +57,7 @@ export default function DeleteConfirmModal({
                                 Delete {itemType}?
                             </h3>
                             <p className="text-gray-600 mb-6">
-                                Are you sure you want to delete <span className="font-semibold text-gray-900">"{itemName}"</span>? This action cannot be undone.
+                                Are you sure you want to delete <span className="font-semibold text-gray-900">&quot;{itemName}&quot;</span>? This action cannot be undone.
                             </p>
 
                             {/* Actions */}
