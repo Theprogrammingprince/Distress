@@ -45,3 +45,15 @@ export const useUpdatePassword = () => {
         mutationFn: updatePassword,
     });
 };
+
+import { useQuery } from '@tanstack/react-query';
+import { getUserProfile } from '../api/users';
+
+// Get user profile
+export const useProfile = () => {
+    return useQuery({
+        queryKey: ['profile'],
+        queryFn: getUserProfile,
+        retry: false,
+    });
+};
