@@ -3,15 +3,28 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { Star, ShoppingCart, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Star, ShoppingCart, Heart } from 'lucide-react';
 import { Product } from '@/lib/products';
-import { useRef } from 'react';
+import { useWishlist } from '@/app/context/WishlistContext';
 
 interface ProductCardProps {
     product: Product;
 }
 
 export default function ProductCard({ product }: ProductCardProps) {
+    const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
+    const isWishlisted = isInWishlist(product.id);
+
+    const toggleWishlist = (e: React.MouseEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (isWishlisted) {
+            removeFromWishlist(product.id);
+        } else {
+            addToWishlist(product);
+        }
+    };
+
     const discount = product.originalPrice
         ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
         : 0;
@@ -30,6 +43,13 @@ export default function ProductCard({ product }: ProductCardProps) {
                     </span>
                 </div>
             )}
+
+            <button
+                onClick={toggleWishlist}
+                className="absolute top-4 right-4 z-10 p-2 bg-white/90 backdrop-blur-sm rounded-full text-gray-400 hover:text-red-500 transition-colors"
+            >
+                <Heart className={`w-5 h-5 ${isWishlisted ? 'fill-red-500 text-red-500' : 'fill-transparent'}`} />
+            </button>
 
             {/* Product Image */}
             <Link href={`/products/${product.id}`}>
@@ -51,8 +71,8 @@ export default function ProductCard({ product }: ProductCardProps) {
                         <Star
                             key={i}
                             className={`w-3.5 h-3.5 ${i < product.rating
-                                    ? 'fill-amber-400 text-amber-400'
-                                    : 'fill-gray-200 text-gray-200'
+                                ? 'fill-amber-400 text-amber-400'
+                                : 'fill-gray-200 text-gray-200'
                                 }`}
                         />
                     ))}

@@ -4,9 +4,26 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Mail, Lock, Eye, EyeOff } from 'lucide-react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 export default function SignInPage() {
+    const router = useRouter();
     const [showPassword, setShowPassword] = useState(false);
+    const [formData, setFormData] = useState({
+        email: '',
+        password: ''
+    });
+
+    const handleLogin = (e: React.FormEvent) => {
+        e.preventDefault();
+
+        // Mock authentication logic
+        if (formData.email.toLowerCase().includes('seller')) {
+            router.push('/dashboard');
+        } else {
+            router.push('/account');
+        }
+    };
 
     return (
         <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4">
@@ -23,14 +40,17 @@ export default function SignInPage() {
                 </div>
 
                 <div className="bg-white rounded-2xl p-8 shadow-lg">
-                    <form className="space-y-6">
+                    <form className="space-y-6" onSubmit={handleLogin}>
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
                             <div className="relative">
                                 <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                                 <input
                                     type="email"
-                                    placeholder="you@example.com"
+                                    value={formData.email}
+                                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                                    required
+                                    placeholder="buyer@example.com or seller@distress.com"
                                     className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500"
                                 />
                             </div>
@@ -42,6 +62,9 @@ export default function SignInPage() {
                                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                                 <input
                                     type={showPassword ? 'text' : 'password'}
+                                    value={formData.password}
+                                    onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                                    required
                                     placeholder="••••••••"
                                     className="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500"
                                 />

@@ -1,15 +1,17 @@
 'use client';
 
-import { useState } from 'react';
-import { motion } from 'framer-motion';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useProducts } from '@/app/context/ProductsContext';
-import { Upload, X } from 'lucide-react';
+import { Upload } from 'lucide-react';
 import Image from 'next/image';
 
-export default function CreateProductPage() {
+function EditProductContent() {
     const router = useRouter();
-    const { addProduct } = useProducts();
+    const searchParams = useSearchParams();
+    const productId = searchParams.get('id');
+    const { getProduct, updateProduct } = useProducts();
+
     const [selectedImage, setSelectedImage] = useState<string | null>(null);
     const [selectedSizes, setSelectedSizes] = useState<string[]>(['XS']);
     const [selectedColors, setSelectedColors] = useState<string[]>(['#FF6B6B']);
@@ -22,6 +24,27 @@ export default function CreateProductPage() {
         description: '',
         price: ''
     });
+
+    useEffect(() => {
+        if (productId) {
+            const product = getProduct(productId);
+            if (product) {
+                setFormData({
+                    productName: product.name,
+                    category: product.category,
+                    brand: '', // Not in Product interface
+                    weight: '', // Not in Product interface
+                    gender: '', // Not in Product interface
+                    description: product.description,
+                    price: product.price.toString()
+                });
+                setSelectedImage(product.image);
+            } else {
+                // Product not found, redirect?
+                // router.push('/dashboard/products');
+            }
+        }
+    }, [productId, getProduct]);
 
     const sizes = ['XS', 'S', 'M', 'Xl', 'XXL', '3XL'];
     const colors = [
@@ -57,33 +80,30 @@ export default function CreateProductPage() {
         }
     };
 
-    const handleCreate = () => {
-        if (!formData.productName || !formData.price) {
+    const handleUpdate = () => {
+        if (!process.env.NEXT_PUBLIC_IS_DEMO && (!formData.productName || !formData.price)) {
             alert('Please fill in required fields');
             return;
         }
 
-        addProduct({
-            name: formData.productName,
-            description: formData.description,
-            price: parseFloat(formData.price),
-            image: selectedImage || '/images/img (1).jpg', // Fallback image
-            category: formData.category || 'Uncategorized',
-            rating: 0,
-            reviews: 0,
-            inStock: true,
-            // badge: 'New'
-        });
-
-        router.push('/dashboard/products');
+        if (productId) {
+            updateProduct(productId, {
+                name: formData.productName,
+                description: formData.description,
+                price: parseFloat(formData.price),
+                image: selectedImage || '/images/img (1).jpg',
+                category: formData.category || 'Uncategorized',
+            });
+            router.push('/dashboard/products');
+        }
     };
 
     return (
         <div>
             {/* Page Header */}
             <div className="mb-8">
-                <h1 className="text-2xl font-bold text-gray-900 mb-1">Create Product</h1>
-                <p className="text-sm text-gray-500">View and manage all listed products easily</p>
+                <h1 className="text-2xl font-bold text-gray-900 mb-1">Edit Product</h1>
+                <p className="text-sm text-gray-500">Update product details</p>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -109,10 +129,10 @@ export default function CreateProductPage() {
 
                         {/* Product Info */}
                         <h3 className="font-semibold text-gray-900 mb-1">
-                            {formData.productName || 'Japan Green Outer'}
+                            {formData.productName || 'Product Name'}
                         </h3>
                         <p className="text-xs text-gray-500 mb-3">
-                            Soft silk, 60cm blend brand polo with branded striped Insole for daily confidence
+                            {formData.description || 'Product description...'}
                         </p>
 
                         {/* Price */}
@@ -164,10 +184,10 @@ export default function CreateProductPage() {
                                 Cancel
                             </button>
                             <button
-                                onClick={handleCreate}
+                                onClick={handleUpdate}
                                 className="flex-1 px-4 py-2.5 bg-amber-500 hover:bg-amber-600 text-white rounded-lg transition-colors text-sm font-medium"
                             >
-                                Create Product
+                                Save Changes
                             </button>
                         </div>
                     </div>
@@ -177,7 +197,7 @@ export default function CreateProductPage() {
                 <div className="lg:col-span-2 space-y-6">
                     {/* Thumbnail Upload */}
                     <div className="bg-white rounded-2xl p-6 border border-gray-200">
-                        <h3 className="font-semibold text-gray-900 mb-4">Add Thumbnail Photo</h3>
+                        <h3 className="font-semibold text-gray-900 mb-4">Update Thumbnail Photo</h3>
 
                         <div className="border-2 border-dashed border-gray-300 rounded-2xl p-12 text-center">
                             <input
@@ -201,9 +221,6 @@ export default function CreateProductPage() {
                                     </button>
                                     <p className="text-sm text-gray-600 mb-1">
                                         Drop your images here, or click to browse
-                                    </p>
-                                    <p className="text-xs text-gray-400">
-                                        1600 x 1200 (4:3) recommended. PNG, JPG and GIF files are allowed
                                     </p>
                                 </div>
                             </label>
@@ -241,8 +258,11 @@ export default function CreateProductPage() {
                                         <option value="">Choose a categories</option>
                                         <option value="Furniture">Furniture</option>
                                         <option value="Electronics">Electronics</option>
-                                        <option value="Clothing">Clothing</option>
-                                        <option value="Home Decor">Home Decor</option>
+                                        <option value="Drinkware">Drinkware</option>
+                                        <option value="Cookware">Cookware</option>
+                                        <option value="Appliances">Appliances</option>
+                                        <option value="Utensils">Utensils</option>
+                                        <option value="Kitchen">Kitchen</option>
                                     </select>
                                 </div>
                             </div>
@@ -259,92 +279,6 @@ export default function CreateProductPage() {
                                     placeholder="0.00"
                                     className="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
                                 />
-                            </div>
-
-                            {/* Brand, Weight & Gender */}
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                                        Brand
-                                    </label>
-                                    <input
-                                        type="text"
-                                        value={formData.brand}
-                                        onChange={(e) => setFormData({ ...formData, brand: e.target.value })}
-                                        placeholder="Brand Name"
-                                        className="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                                        Weight
-                                    </label>
-                                    <input
-                                        type="text"
-                                        value={formData.weight}
-                                        onChange={(e) => setFormData({ ...formData, weight: e.target.value })}
-                                        placeholder="Gm & kg"
-                                        className="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                                        Gender
-                                    </label>
-                                    <select
-                                        value={formData.gender}
-                                        onChange={(e) => setFormData({ ...formData, gender: e.target.value })}
-                                        className="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent text-gray-500"
-                                    >
-                                        <option value="">Select Gender</option>
-                                        <option value="male">Male</option>
-                                        <option value="female">Female</option>
-                                        <option value="unisex">Unisex</option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            {/* Size Selection */}
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-3">
-                                    Size :
-                                </label>
-                                <div className="flex flex-wrap gap-2">
-                                    {sizes.map((size) => (
-                                        <button
-                                            key={size}
-                                            type="button"
-                                            onClick={() => toggleSize(size)}
-                                            className={`px-6 py-2.5 rounded-lg border text-sm font-medium transition-colors ${selectedSizes.includes(size)
-                                                ? 'border-teal-600 bg-teal-50 text-teal-600'
-                                                : 'border-gray-200 text-gray-600 hover:border-gray-300'
-                                                }`}
-                                        >
-                                            {size}
-                                        </button>
-                                    ))}
-                                </div>
-                            </div>
-
-                            {/* Color Selection */}
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-3">
-                                    Colors :
-                                </label>
-                                <div className="flex flex-wrap gap-3">
-                                    {colors.map((color) => (
-                                        <button
-                                            key={color}
-                                            type="button"
-                                            onClick={() => toggleColor(color)}
-                                            className={`w-10 h-10 rounded-lg border-2 transition-all ${selectedColors.includes(color)
-                                                ? 'border-gray-900 scale-110'
-                                                : 'border-gray-200'
-                                                }`}
-                                            style={{ backgroundColor: color }}
-                                        />
-                                    ))}
-                                </div>
                             </div>
 
                             {/* Description */}
@@ -365,5 +299,13 @@ export default function CreateProductPage() {
                 </div>
             </div>
         </div>
+    );
+}
+
+export default function EditProductPage() {
+    return (
+        <Suspense fallback={<div>Loading...</div>}>
+            <EditProductContent />
+        </Suspense>
     );
 }

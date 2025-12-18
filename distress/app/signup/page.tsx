@@ -4,10 +4,12 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Mail, Lock, User, Eye, EyeOff, Phone, MapPin, FileText, Fingerprint, Building2 } from 'lucide-react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 type UserType = 'buyer' | 'client' | null;
 
 export default function SignUpPage() {
+    const router = useRouter();
     const [showPassword, setShowPassword] = useState(false);
     const [userType, setUserType] = useState<UserType>(null);
     const [formData, setFormData] = useState({
@@ -22,6 +24,16 @@ export default function SignUpPage() {
         businessName: '',
         businessRegNumber: ''
     });
+
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        // Mock registration logic
+        if (userType === 'client') {
+            router.push('/dashboard');
+        } else {
+            router.push('/account');
+        }
+    };
 
     return (
         <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4">
@@ -93,7 +105,7 @@ export default function SignUpPage() {
                                 </button>
                             </div>
 
-                            <form className="space-y-4 md:space-y-6">
+                            <form className="space-y-4 md:space-y-6" onSubmit={handleSubmit}>
                                 {/* Basic Information */}
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div>
