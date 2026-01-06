@@ -11,6 +11,7 @@ interface SignUpData {
     password: string;
     full_name?: string;
     phone?: string;
+    role?: string;
 }
 
 interface SignInData {
@@ -29,14 +30,21 @@ serve(async (req) => {
             Deno.env.get('SUPABASE_ANON_KEY') ?? '',
         );
 
+        // Initialize Admin client for database operations (bypassing RLS)
+        const supabaseAdmin = createClient(
+            Deno.env.get('SUPABASE_URL') ?? '',
+            Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
+        );
+
         const url = new URL(req.url);
         const pathParts = url.pathname.split('/').filter(Boolean);
         const action = pathParts[1];
 
         // POST /auth/signup - Register new user
         if (req.method === 'POST' && action === 'signup') {
-            const { email, password, full_name, phone }: SignUpData = await req.json();
+            const { email, password, full_name, phone, role }: SignUpData = await req.json();
 
+            // Use regular client for Auth to respect project settings (e.g. email confirmation)
             const { data, error } = await supabaseClient.auth.signUp({
                 email,
                 password,
@@ -44,24 +52,29 @@ serve(async (req) => {
                     data: {
                         full_name,
                         phone,
+                        role,
                     },
                 },
             });
 
             if (error) throw error;
 
-            // Create profile
+            // Create profile using Admin client (bypassing RLS)
             if (data.user) {
-                const { error: profileError } = await supabaseClient
+                const { error: profileError } = await supabaseAdmin
                     .from('profiles')
                     .insert([{
                         id: data.user.id,
                         email,
                         full_name,
                         phone,
+                        role: role || 'buyer',
                     }]);
 
-                if (profileError) console.error('Profile creation error:', profileError);
+                if (profileError) {
+                    console.error('Profile creation error:', profileError);
+                    // If profile creation fails, we might want to return an error or at least log it
+                }
             }
 
             return new Response(JSON.stringify(data), {

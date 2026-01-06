@@ -30,6 +30,8 @@ const trendingProducts = [
     { name: 'Electric Shaver', image: '/images/img (8).jpg', category: 'Personal Care', price: 44.99 }
 ];
 
+import { useProfile } from '@/lib/hooks/useAuth';
+
 export default function Header() {
     const router = useRouter();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -37,6 +39,7 @@ export default function Header() {
     const [searchQuery, setSearchQuery] = useState('');
     const [filteredProducts, setFilteredProducts] = useState(trendingProducts);
     const searchRef = useRef<HTMLDivElement>(null);
+    const { data: profile } = useProfile();
 
     const navLinks = [
         { href: '/', label: 'Home' },
@@ -233,10 +236,17 @@ export default function Header() {
                                 0
                             </span>
                         </Link>
-                        <Link href="/signin" className="hidden md:flex items-center gap-2 px-4 py-2 bg-gray-900 hover:bg-gray-800 text-white rounded-full transition-colors">
-                            <User className="w-4 h-4" />
-                            <span className="text-sm font-medium">Sign In</span>
-                        </Link>
+                        {profile ? (
+                            <Link href="/dashboard" className="hidden md:flex items-center gap-2 px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-full transition-colors">
+                                <User className="w-4 h-4" />
+                                <span className="text-sm font-medium">Dashboard</span>
+                            </Link>
+                        ) : (
+                            <Link href="/signin" className="hidden md:flex items-center gap-2 px-4 py-2 bg-gray-900 hover:bg-gray-800 text-white rounded-full transition-colors">
+                                <User className="w-4 h-4" />
+                                <span className="text-sm font-medium">Sign In</span>
+                            </Link>
+                        )}
                         <button
                             onClick={() => setIsMenuOpen(!isMenuOpen)}
                             className="md:hidden p-2 hover:bg-gray-100 rounded-full transition-colors"
@@ -266,13 +276,23 @@ export default function Header() {
                                         {link.label}
                                     </Link>
                                 ))}
-                                <Link
-                                    href="/signin"
-                                    className="mx-4 mt-2 px-4 py-2 bg-gray-900 text-white text-center rounded-full"
-                                    onClick={() => setIsMenuOpen(false)}
-                                >
-                                    Sign In
-                                </Link>
+                                {profile ? (
+                                    <Link
+                                        href="/dashboard"
+                                        className="mx-4 mt-2 px-4 py-2 bg-teal-600 text-white text-center rounded-full"
+                                        onClick={() => setIsMenuOpen(false)}
+                                    >
+                                        Dashboard
+                                    </Link>
+                                ) : (
+                                    <Link
+                                        href="/signin"
+                                        className="mx-4 mt-2 px-4 py-2 bg-gray-900 text-white text-center rounded-full"
+                                        onClick={() => setIsMenuOpen(false)}
+                                    >
+                                        Sign In
+                                    </Link>
+                                )}
                             </nav>
                         </motion.div>
                     )}

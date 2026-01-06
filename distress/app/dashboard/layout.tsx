@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { useTheme } from 'next-themes';
 import {
@@ -17,7 +17,11 @@ import {
     HelpCircle,
     Moon,
     Sun,
+    Heart,
+    LogOut,
 } from 'lucide-react';
+import { useProfile, useSignOut } from '@/lib/hooks/useAuth';
+import toast from 'react-hot-toast';
 
 interface DashboardLayoutProps {
     children: React.ReactNode;
@@ -26,6 +30,8 @@ interface DashboardLayoutProps {
 function DashboardSidebar() {
     const pathname = usePathname();
     const [expandedMenus, setExpandedMenus] = useState<string[]>(['product']);
+    const { data: profile, isLoading } = useProfile();
+    const role = profile?.role || 'buyer'; // Default to buyer if no role
 
     const toggleMenu = (menu: string) => {
         setExpandedMenus(prev =>
@@ -33,7 +39,7 @@ function DashboardSidebar() {
         );
     };
 
-    const menuItems = [
+    const sellerMenuItems = [
         {
             id: 'overview',
             label: 'Overview',
@@ -49,8 +55,6 @@ function DashboardSidebar() {
             submenu: [
                 { label: 'List', href: '/dashboard/products' },
                 { label: 'Grid', href: '/dashboard/products/grid' },
-                { label: 'Details', href: '/dashboard/products/details' },
-                { label: 'Edit', href: '/dashboard/products/edit' },
                 { label: 'Create', href: '/dashboard/products/create' }
             ]
         },
@@ -69,20 +73,54 @@ function DashboardSidebar() {
             submenu: []
         },
         {
-            id: 'roles',
-            label: 'Roles',
+            id: 'customers',
+            label: 'Customers',
             icon: Users,
-            href: '/dashboard/roles',
-            submenu: []
-        },
-        {
-            id: 'customer',
-            label: 'Customer',
-            icon: UserCircle,
             href: '/dashboard/customers',
             submenu: []
         }
     ];
+
+    const buyerMenuItems = [
+        {
+            id: 'overview',
+            label: 'My Overview',
+            icon: LayoutDashboard,
+            href: '/dashboard',
+            submenu: []
+        },
+        {
+            id: 'my-orders',
+            label: 'My Orders',
+            icon: ShoppingCart,
+            href: '/dashboard/my-orders',
+            submenu: []
+        },
+        {
+            id: 'wishlist',
+            label: 'Wishlist',
+            icon: Heart,
+            href: '/dashboard/wishlist',
+            submenu: []
+        },
+        {
+            id: 'profile',
+            label: 'Profile',
+            icon: UserCircle,
+            href: '/dashboard/profile',
+            submenu: []
+        }
+    ];
+
+    const menuItems = role === 'admin' || role === 'client' ? sellerMenuItems : buyerMenuItems;
+
+    if (isLoading) {
+        return (
+            <aside className="w-64 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 flex flex-col items-center justify-center">
+                <div className="w-8 h-8 border-4 border-teal-500 border-t-transparent rounded-full animate-spin"></div>
+            </aside>
+        );
+    }
 
     return (
         <aside className="w-64 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 flex flex-col">
@@ -129,8 +167,8 @@ function DashboardSidebar() {
                                                     <Link
                                                         href={subItem.href}
                                                         className={`block px-3 py-2 text-sm rounded-lg transition-colors ${pathname === subItem.href
-                                                                ? 'bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400 font-medium'
-                                                                : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700'
+                                                            ? 'bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400 font-medium'
+                                                            : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700'
                                                             }`}
                                                     >
                                                         {subItem.label}
@@ -144,8 +182,8 @@ function DashboardSidebar() {
                                 <Link
                                     href={item.href}
                                     className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${pathname === item.href
-                                            ? 'bg-teal-50 dark:bg-teal-900/20 text-teal-600 dark:text-teal-400 font-medium'
-                                            : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
+                                        ? 'bg-teal-50 dark:bg-teal-900/20 text-teal-600 dark:text-teal-400 font-medium'
+                                        : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
                                         }`}
                                 >
                                     <item.icon className="w-5 h-5" />
@@ -162,6 +200,22 @@ function DashboardSidebar() {
 
 function DashboardHeader() {
     const { theme, setTheme } = useTheme();
+    const router = useRouter();
+    const signOut = useSignOut();
+    const { data: profile } = useProfile();
+
+    const handleSignOut = async () => {
+        const loadingToast = toast.loading('Signing out...');
+        try {
+            await signOut.mutateAsync();
+            toast.dismiss(loadingToast);
+            toast.success('Signed out successfully');
+            router.push('/signin');
+        } catch (error) {
+            toast.dismiss(loadingToast);
+            toast.error('Failed to sign out');
+        }
+    };
 
     return (
         <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-8 py-4">
@@ -170,7 +224,7 @@ function DashboardHeader() {
                     <div className="relative">
                         <input
                             type="text"
-                            placeholder="Search product..."
+                            placeholder="Search..."
                             className="w-full pl-10 pr-4 py-2 border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
                         />
                         <div className="absolute left-3 top-1/2 -translate-y-1/2">
@@ -182,11 +236,14 @@ function DashboardHeader() {
                 </div>
 
                 <div className="flex items-center gap-4 ml-8">
+                    <Link
+                        href="/"
+                        className="flex items-center gap-2 px-4 py-2 bg-teal-50 dark:bg-teal-900/20 text-teal-600 dark:text-teal-400 rounded-lg hover:bg-teal-100 dark:hover:bg-teal-900/30 transition-colors"
+                    >
+                        <span className="font-medium text-sm">Explore</span>
+                    </Link>
                     <button className="p-2 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg">
                         <Bell className="w-5 h-5" />
-                    </button>
-                    <button className="p-2 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg">
-                        <HelpCircle className="w-5 h-5" />
                     </button>
                     <button
                         onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
@@ -195,13 +252,26 @@ function DashboardHeader() {
                         {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
                     </button>
                     <div className="flex items-center gap-3 pl-4 border-l border-gray-200 dark:border-gray-700">
-                        <div className="w-10 h-10 bg-gradient-to-br from-amber-400 to-orange-500 rounded-full flex items-center justify-center">
-                            <span className="text-white font-semibold text-sm">OD</span>
+                        <div className="w-10 h-10 bg-gradient-to-br from-teal-400 to-teal-600 rounded-full flex items-center justify-center">
+                            <span className="text-white font-semibold text-sm">
+                                {profile?.full_name?.substring(0, 2).toUpperCase() || 'US'}
+                            </span>
                         </div>
                         <div>
-                            <p className="text-sm font-semibold text-gray-900 dark:text-white">Origo Design</p>
-                            <p className="text-xs text-gray-500 dark:text-gray-400">Seller</p>
+                            <p className="text-sm font-semibold text-gray-900 dark:text-white">
+                                {profile?.full_name || 'User'}
+                            </p>
+                            <p className="text-xs text-gray-500 dark:text-gray-400 capitalize">
+                                {profile?.role || 'Buyer'}
+                            </p>
                         </div>
+                        <button
+                            onClick={handleSignOut}
+                            className="p-2 text-red-500 hover:bg-red-50 rounded-lg ml-2"
+                            title="Sign Out"
+                        >
+                            <LogOut className="w-5 h-5" />
+                        </button>
                     </div>
                 </div>
             </div>

@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Mail, Lock, User, Eye, EyeOff, Phone, MapPin, FileText, Fingerprint, Building2 } from 'lucide-react';
 import Link from 'next/link';
-import { useSignUp } from '../../lib/hooks/useAuth';
+import { useSignUp } from '@/lib/hooks/useAuth';
 import toast from 'react-hot-toast';
 
 type UserType = 'buyer' | 'client' | null;
@@ -35,23 +35,36 @@ export default function SignUpPage() {
         const loadingToast = toast.loading('Creating your account...');
 
         try {
-            await signUp.mutateAsync({
+            const result = await signUp.mutateAsync({
                 email: formData.email,
                 password: formData.password,
                 full_name: formData.fullName,
                 phone: formData.phone,
+                role: userType || 'buyer',
             });
 
-            // Dismiss loading and show success
+            // Dismiss loading
             toast.dismiss(loadingToast);
-            toast.success(`🎉 Welcome to Distress! Your ${userType} account has been created successfully!`, {
-                duration: 5000,
-            });
 
-            // Redirect after success
-            setTimeout(() => {
-                router.push('/');
-            }, 2000);
+            if (result.session) {
+                // Auto-confirmed (Email verification disabled)
+                toast.success(`🎉 Welcome to Distress! Your ${userType} account has been created successfully!`, {
+                    duration: 5000,
+                });
+
+                // Redirect immediately to dashboard
+                router.push('/dashboard');
+            } else {
+                // Email verification required
+                toast.success('Account created! Please check your email to confirm your account.', {
+                    duration: 5000,
+                });
+
+                // Redirect to signin
+                setTimeout(() => {
+                    router.push('/signin');
+                }, 2000);
+            }
         } catch (error: any) {
             // Dismiss loading and show error
             toast.dismiss(loadingToast);

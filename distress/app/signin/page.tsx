@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { Mail, Lock, Eye, EyeOff } from 'lucide-react';
 import Link from 'next/link';
-import { useSignIn } from '../../lib/hooks/useAuth';
+import { useSignIn } from '@/lib/hooks/useAuth';
 import toast from 'react-hot-toast';
 
 export default function SignInPage() {
@@ -34,7 +34,7 @@ export default function SignInPage() {
 
             // Redirect after success
             setTimeout(() => {
-                router.push('/');
+                router.push('/dashboard');
             }, 1500);
         } catch (error: any) {
             // Dismiss loading and show error

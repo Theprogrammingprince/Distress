@@ -5,6 +5,7 @@ export interface SignUpData {
     password: string;
     full_name?: string;
     phone?: string;
+    role?: string;
 }
 
 export interface SignInData {
