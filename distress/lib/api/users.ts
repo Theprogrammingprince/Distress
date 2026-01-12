@@ -48,19 +48,31 @@ export const getUserProfile = async (): Promise<UserProfile> => {
     return data as UserProfile;
 };
 
-// Update user profile
+// Update user profile - Using Supabase client directly to avoid CORS issues
 export const updateUserProfile = async (updates: Partial<UserProfile>): Promise<UserProfile> => {
-    const response = await fetch(`${FUNCTIONS_URL}/users/profile`, {
-        method: 'PUT',
-        headers: await getAuthHeaders(),
-        body: JSON.stringify(updates),
-    });
+    const { data: { user } } = await supabase.auth.getUser();
 
-    if (!response.ok) {
+    if (!user) {
+        throw new Error('Not authenticated');
+    }
+
+    const { data, error } = await supabase
+        .from('profiles')
+        .update(updates)
+        .eq('id', user.id)
+        .select()
+        .single();
+
+    if (error) {
+        console.error('Profile update error:', error);
         throw new Error('Failed to update user profile');
     }
 
-    return response.json();
+    if (!data) {
+        throw new Error('Profile not found');
+    }
+
+    return data as UserProfile;
 };
 
 // Get user order history

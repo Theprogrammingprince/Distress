@@ -92,11 +92,11 @@ export default function SellerSignupSteps({ onSubmit, onBack, isLoading }: Selle
             case 1:
                 return formData.fullName && formData.email && formData.password && formData.phone;
             case 2:
-                return formData.nin && formData.streetAddress;
+                return formData.nin && formData.nin.length > 0; // Only require NIN, business fields are optional
             case 3:
-                return formData.city && formData.state;
+                return formData.streetAddress && formData.city && formData.state;
             case 4:
-                return true; // Profile picture is optional
+                return formData.profilePicture !== null; // Profile picture is now required
             default:
                 return false;
         }
@@ -110,8 +110,8 @@ export default function SellerSignupSteps({ onSubmit, onBack, isLoading }: Selle
                     {[1, 2, 3, 4].map((step) => (
                         <div key={step} className="flex items-center flex-1">
                             <div className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold transition-all ${step < currentStep ? 'bg-teal-600 text-white' :
-                                    step === currentStep ? 'bg-teal-600 text-white ring-4 ring-teal-100' :
-                                        'bg-gray-200 text-gray-500'
+                                step === currentStep ? 'bg-teal-600 text-white ring-4 ring-teal-100' :
+                                    'bg-gray-200 text-gray-500'
                                 }`}>
                                 {step < currentStep ? <CheckCircle className="w-5 h-5" /> : step}
                             </div>
@@ -356,7 +356,7 @@ export default function SellerSignupSteps({ onSubmit, onBack, isLoading }: Selle
                             animate={{ opacity: 1, x: 0 }}
                             exit={{ opacity: 0, x: -20 }}
                         >
-                            <h2 className="text-2xl font-bold mb-6">Profile Picture (Optional)</h2>
+                            <h2 className="text-2xl font-bold mb-6">Profile Picture *</h2>
                             <div className="space-y-4">
                                 <div className="flex flex-col items-center">
                                     <div className="w-32 h-32 rounded-full bg-gray-100 flex items-center justify-center mb-4 overflow-hidden">
@@ -390,9 +390,9 @@ export default function SellerSignupSteps({ onSubmit, onBack, isLoading }: Selle
                                     </p>
                                 </div>
 
-                                <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 mt-6">
-                                    <p className="text-sm text-amber-800">
-                                        <strong>Note:</strong> You can skip this step and add your profile picture later from your dashboard.
+                                <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 mt-6">
+                                    <p className="text-sm text-blue-800">
+                                        <strong>Required:</strong> Please upload a clear profile picture to help us verify your identity and build trust with customers.
                                     </p>
                                 </div>
                             </div>
