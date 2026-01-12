@@ -78,6 +78,13 @@ function DashboardSidebar() {
             icon: Users,
             href: '/dashboard/customers',
             submenu: []
+        },
+        {
+            id: 'profile',
+            label: 'Profile',
+            icon: UserCircle,
+            href: '/dashboard/profile',
+            submenu: []
         }
     ];
 

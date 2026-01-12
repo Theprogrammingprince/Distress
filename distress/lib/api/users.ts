@@ -1,4 +1,4 @@
-import { FUNCTIONS_URL, getAuthHeaders } from '../supabase';
+import { FUNCTIONS_URL, getAuthHeaders, supabase } from '../supabase';
 
 export interface UserProfile {
     id: string;
@@ -22,17 +22,30 @@ export interface UserProfile {
     updated_at: string;
 }
 
-// Get user profile
+// Get user profile - Using Supabase client directly for reliability
 export const getUserProfile = async (): Promise<UserProfile> => {
-    const response = await fetch(`${FUNCTIONS_URL}/users/profile`, {
-        headers: await getAuthHeaders(),
-    });
+    const { data: { user } } = await supabase.auth.getUser();
 
-    if (!response.ok) {
+    if (!user) {
+        throw new Error('Not authenticated');
+    }
+
+    const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', user.id)
+        .single();
+
+    if (error) {
+        console.error('Profile fetch error:', error);
         throw new Error('Failed to fetch user profile');
     }
 
-    return response.json();
+    if (!data) {
+        throw new Error('Profile not found');
+    }
+
+    return data as UserProfile;
 };
 
 // Update user profile
