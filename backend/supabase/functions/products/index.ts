@@ -10,11 +10,17 @@ interface Product {
     name: string;
     description: string;
     price: number;
+    currency: 'NGN' | 'USD';
     category: string;
     image_url: string;
     stock: number;
     rating?: number;
     badge?: string;
+    seller_id?: string;
+    verification_status?: 'pending' | 'approved' | 'rejected';
+    verified_at?: string;
+    verified_by?: string;
+    rejection_reason?: string;
 }
 
 serve(async (req) => {
@@ -108,9 +114,26 @@ serve(async (req) => {
         if (req.method === 'POST') {
             const product: Product = await req.json();
 
+            // Get the authenticated user's ID
+            const { data: { user } } = await supabaseClient.auth.getUser();
+            if (!user) {
+                return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+                    headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+                    status: 401,
+                });
+            }
+
+            // Auto-set seller_id and default verification_status
+            const productData = {
+                ...product,
+                seller_id: user.id,
+                verification_status: 'pending' as const,
+                currency: product.currency || 'NGN' as const,
+            };
+
             const { data, error } = await supabaseClient
                 .from('products')
-                .insert([product])
+                .insert([productData])
                 .select()
                 .single();
 
