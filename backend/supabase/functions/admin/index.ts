@@ -249,6 +249,191 @@ serve(async (req) => {
             });
         }
 
+        // ============================================
+        // SELLER/CLIENT VERIFICATION ENDPOINTS
+        // ============================================
+
+        // GET /admin/sellers/pending - Get all pending sellers/clients
+        if (req.method === 'GET' && pathParts[1] === 'sellers' && pathParts[2] === 'pending') {
+            const page = parseInt(url.searchParams.get('page') || '1');
+            const limit = parseInt(url.searchParams.get('limit') || '20');
+            const offset = (page - 1) * limit;
+
+            const { data, error, count } = await supabaseClient
+                .from('profiles')
+                .select('*', { count: 'exact' })
+                .in('role', ['client', 'seller'])
+                .eq('verification_status', 'pending')
+                .range(offset, offset + limit - 1)
+                .order('created_at', { ascending: false });
+
+            if (error) throw error;
+
+            return new Response(
+                JSON.stringify({
+                    sellers: data,
+                    total: count,
+                    page,
+                    totalPages: Math.ceil((count || 0) / limit),
+                }),
+                {
+                    headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+                    status: 200,
+                }
+            );
+        }
+
+        // GET /admin/sellers/all - Get all sellers with optional status filter
+        if (req.method === 'GET' && pathParts[1] === 'sellers' && pathParts[2] === 'all') {
+            const status = url.searchParams.get('status'); // 'pending', 'approved', 'rejected'
+            const page = parseInt(url.searchParams.get('page') || '1');
+            const limit = parseInt(url.searchParams.get('limit') || '20');
+            const offset = (page - 1) * limit;
+
+            let query = supabaseClient
+                .from('profiles')
+                .select('*', { count: 'exact' })
+                .in('role', ['client', 'seller']);
+
+            if (status) {
+                query = query.eq('verification_status', status);
+            }
+
+            const { data, error, count } = await query
+                .range(offset, offset + limit - 1)
+                .order('created_at', { ascending: false });
+
+            if (error) throw error;
+
+            return new Response(
+                JSON.stringify({
+                    sellers: data,
+                    total: count,
+                    page,
+                    totalPages: Math.ceil((count || 0) / limit),
+                }),
+                {
+                    headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+                    status: 200,
+                }
+            );
+        }
+
+        // GET /admin/sellers/stats - Get seller verification statistics
+        if (req.method === 'GET' && pathParts[1] === 'sellers' && pathParts[2] === 'stats') {
+            const { data, error } = await supabaseClient
+                .from('seller_verification_stats')
+                .select('*')
+                .single();
+
+            if (error) throw error;
+
+            return new Response(JSON.stringify(data), {
+                headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+                status: 200,
+            });
+        }
+
+        // GET /admin/sellers/:id - Get single seller details for review
+        if (req.method === 'GET' && pathParts[1] === 'sellers' && pathParts[2] && pathParts[2] !== 'pending' && pathParts[2] !== 'all' && pathParts[2] !== 'stats') {
+            const sellerId = pathParts[2];
+
+            const { data, error } = await supabaseClient
+                .from('profiles')
+                .select(`
+                    *,
+                    verifier:profiles!profiles_verified_by_fkey(
+                        id,
+                        full_name,
+                        email
+                    )
+                `)
+                .eq('id', sellerId)
+                .single();
+
+            if (error) throw error;
+
+            return new Response(JSON.stringify(data), {
+                headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+                status: 200,
+            });
+        }
+
+        // POST /admin/sellers/approve - Approve a seller/client
+        if (req.method === 'POST' && pathParts[1] === 'sellers' && pathParts[2] === 'approve') {
+            const { seller_id } = await req.json();
+
+            if (!seller_id) {
+                return new Response(JSON.stringify({ error: 'seller_id is required' }), {
+                    headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+                    status: 400,
+                });
+            }
+
+            const { error } = await supabaseClient.rpc('approve_seller', {
+                seller_id,
+                admin_id: user.id,
+            });
+
+            if (error) throw error;
+
+            // Get updated seller
+            const { data: seller } = await supabaseClient
+                .from('profiles')
+                .select('*')
+                .eq('id', seller_id)
+                .single();
+
+            return new Response(
+                JSON.stringify({
+                    message: 'Seller approved successfully',
+                    seller
+                }),
+                {
+                    headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+                    status: 200,
+                }
+            );
+        }
+
+        // POST /admin/sellers/reject - Reject a seller/client
+        if (req.method === 'POST' && pathParts[1] === 'sellers' && pathParts[2] === 'reject') {
+            const { seller_id, reason } = await req.json();
+
+            if (!seller_id || !reason) {
+                return new Response(JSON.stringify({ error: 'seller_id and reason are required' }), {
+                    headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+                    status: 400,
+                });
+            }
+
+            const { error } = await supabaseClient.rpc('reject_seller', {
+                seller_id,
+                admin_id: user.id,
+                reason,
+            });
+
+            if (error) throw error;
+
+            // Get updated seller
+            const { data: seller } = await supabaseClient
+                .from('profiles')
+                .select('*')
+                .eq('id', seller_id)
+                .single();
+
+            return new Response(
+                JSON.stringify({
+                    message: 'Seller rejected successfully',
+                    seller
+                }),
+                {
+                    headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+                    status: 200,
+                }
+            );
+        }
+
         return new Response(JSON.stringify({ error: 'Method not allowed' }), {
             headers: { ...corsHeaders, 'Content-Type': 'application/json' },
             status: 405,

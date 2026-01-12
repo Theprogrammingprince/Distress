@@ -261,9 +261,31 @@ function DashboardHeader() {
                             <p className="text-sm font-semibold text-gray-900 dark:text-white">
                                 {profile?.full_name || 'User'}
                             </p>
-                            <p className="text-xs text-gray-500 dark:text-gray-400 capitalize">
-                                {profile?.role || 'Buyer'}
-                            </p>
+                            <div className="flex items-center gap-2">
+                                <p className="text-xs text-gray-500 dark:text-gray-400 capitalize">
+                                    {profile?.role || 'Buyer'}
+                                </p>
+                                {/* Verification Badge for Sellers/Clients */}
+                                {(profile?.role === 'client' || profile?.role === 'seller') && (
+                                    <>
+                                        {profile?.verification_status === 'approved' && (
+                                            <span className="inline-flex items-center px-2 py-0.5 text-xs font-medium bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 rounded-full">
+                                                ✓ Verified
+                                            </span>
+                                        )}
+                                        {profile?.verification_status === 'pending' && (
+                                            <span className="inline-flex items-center px-2 py-0.5 text-xs font-medium bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-300 rounded-full">
+                                                ⏳ Pending
+                                            </span>
+                                        )}
+                                        {profile?.verification_status === 'rejected' && (
+                                            <span className="inline-flex items-center px-2 py-0.5 text-xs font-medium bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300 rounded-full">
+                                                ✗ Rejected
+                                            </span>
+                                        )}
+                                    </>
+                                )}
+                            </div>
                         </div>
                         <button
                             onClick={handleSignOut}

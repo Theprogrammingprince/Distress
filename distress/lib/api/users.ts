@@ -8,6 +8,16 @@ export interface UserProfile {
     avatar_url?: string;
     role?: string;
     address?: any;
+    verification_status?: 'pending' | 'approved' | 'rejected';
+    verified_at?: string;
+    verified_by?: string;
+    rejection_reason?: string;
+    business_name?: string;
+    business_reg_number?: string;
+    nin?: string;
+    street_address?: string;
+    city?: string;
+    state?: string;
     created_at: string;
     updated_at: string;
 }

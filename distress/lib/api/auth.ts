@@ -27,6 +27,7 @@ export const signUp = async (data: SignUpData): Promise<AuthResponse> => {
             data: {
                 full_name: data.full_name,
                 phone: data.phone,
+                role: data.role || 'buyer',
             },
         },
     });

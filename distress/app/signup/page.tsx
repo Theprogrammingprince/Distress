@@ -48,12 +48,40 @@ export default function SignUpPage() {
 
             if (result.session) {
                 // Auto-confirmed (Email verification disabled)
-                toast.success(`🎉 Welcome to Distress! Your ${userType} account has been created successfully!`, {
-                    duration: 5000,
-                });
+                toast.dismiss(loadingToast);
+
+                if (userType === 'client') {
+                    // Seller/Client specific message
+                    toast.success('🎉 Account created successfully!', {
+                        duration: 3000,
+                    });
+
+                    // Show verification notice for sellers
+                    setTimeout(() => {
+                        toast(
+                            '⏳ Your account is under review. You will not be able to create products until your profile is verified by our admin team. This usually takes 24-48 hours.',
+                            {
+                                duration: 8000,
+                                icon: '📋',
+                                style: {
+                                    background: '#FEF3C7',
+                                    color: '#92400E',
+                                    border: '1px solid #F59E0B',
+                                },
+                            }
+                        );
+                    }, 500);
+                } else {
+                    // Buyer success message
+                    toast.success(`🎉 Welcome to Distress! Your buyer account has been created successfully!`, {
+                        duration: 5000,
+                    });
+                }
 
                 // Redirect immediately to dashboard
-                router.push('/dashboard');
+                setTimeout(() => {
+                    router.push('/dashboard');
+                }, 1000);
             } else {
                 // Email verification required
                 toast.success('Account created! Please check your email to confirm your account.', {
