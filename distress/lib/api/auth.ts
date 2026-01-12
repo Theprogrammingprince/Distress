@@ -6,6 +6,13 @@ export interface SignUpData {
     full_name?: string;
     phone?: string;
     role?: string;
+    // Seller-specific fields
+    nin?: string;
+    business_name?: string;
+    business_reg_number?: string;
+    street_address?: string;
+    city?: string;
+    state?: string;
 }
 
 export interface SignInData {
@@ -28,6 +35,13 @@ export const signUp = async (data: SignUpData): Promise<AuthResponse> => {
                 full_name: data.full_name,
                 phone: data.phone,
                 role: data.role || 'buyer',
+                // Seller-specific fields
+                nin: data.nin,
+                business_name: data.business_name,
+                business_reg_number: data.business_reg_number,
+                street_address: data.street_address,
+                city: data.city,
+                state: data.state,
             },
         },
     });

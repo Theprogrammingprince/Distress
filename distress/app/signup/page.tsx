@@ -41,6 +41,13 @@ export default function SignUpPage() {
                 full_name: formData.fullName,
                 phone: formData.phone,
                 role: userType || 'buyer',
+                // Send seller-specific data
+                nin: userType === 'client' ? formData.nin : undefined,
+                business_name: userType === 'client' ? formData.businessName : undefined,
+                business_reg_number: userType === 'client' ? formData.businessRegNumber : undefined,
+                street_address: userType === 'client' ? formData.streetAddress : undefined,
+                city: userType === 'client' ? formData.city : undefined,
+                state: userType === 'client' ? formData.state : undefined,
             });
 
             // Dismiss loading
