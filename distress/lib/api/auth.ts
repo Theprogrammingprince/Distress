@@ -6,6 +6,7 @@ export interface SignUpData {
     full_name?: string;
     phone?: string;
     role?: string;
+    avatar_url?: string;
     // Seller-specific fields
     nin?: string;
     business_name?: string;
@@ -35,6 +36,7 @@ export const signUp = async (data: SignUpData): Promise<AuthResponse> => {
                 full_name: data.full_name,
                 phone: data.phone,
                 role: data.role || 'buyer',
+                avatar_url: data.avatar_url,
                 // Seller-specific fields
                 nin: data.nin,
                 business_name: data.business_name,

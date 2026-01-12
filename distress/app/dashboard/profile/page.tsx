@@ -5,9 +5,11 @@ import {
     User, Mail, Phone, MapPin, Save, Camera, Building2, FileText,
     CheckCircle, Clock, XCircle, Shield, CreditCard
 } from 'lucide-react';
+import Image from 'next/image';
 import { useProfile } from '@/lib/hooks/useAuth';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { updateUserProfile } from '@/lib/api/users';
+import { supabase } from '@/lib/supabase';
 import toast from 'react-hot-toast';
 import Link from 'next/link';
 
@@ -15,6 +17,7 @@ export default function ProfilePage() {
     const { data: profile, isLoading } = useProfile();
     const queryClient = useQueryClient();
     const isSeller = profile?.role === 'client' || profile?.role === 'seller';
+    const [uploadingPhoto, setUploadingPhoto] = useState(false);
 
     const [formData, setFormData] = useState({
         full_name: '',
@@ -51,6 +54,70 @@ export default function ProfilePage() {
         }, {
             onSettled: () => toast.dismiss(loadingToast)
         });
+    };
+
+    const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        // Validate file size (max 5MB)
+        if (file.size > 5 * 1024 * 1024) {
+            toast.error('File size must be less than 5MB');
+            return;
+        }
+
+        // Validate file type
+        if (!file.type.startsWith('image/')) {
+            toast.error('Please upload an image file');
+            return;
+        }
+
+        setUploadingPhoto(true);
+        const loadingToast = toast.loading('Uploading photo...');
+
+        try {
+            // Delete old avatar if exists
+            if (profile?.avatar_url) {
+                const oldPath = profile.avatar_url.split('/').pop();
+                if (oldPath) {
+                    await supabase.storage
+                        .from('profiles')
+                        .remove([`avatars/${oldPath}`]);
+                }
+            }
+
+            // Upload new photo
+            const fileExt = file.name.split('.').pop();
+            const fileName = `${profile?.id}-${Date.now()}.${fileExt}`;
+            const filePath = `avatars/${fileName}`;
+
+            const { error: uploadError } = await supabase.storage
+                .from('profiles')
+                .upload(filePath, file, {
+                    cacheControl: '3600',
+                    upsert: true
+                });
+
+            if (uploadError) throw uploadError;
+
+            // Get public URL
+            const { data: { publicUrl } } = supabase.storage
+                .from('profiles')
+                .getPublicUrl(filePath);
+
+            // Update profile with new avatar URL
+            await updateProfile.mutateAsync({
+                avatar_url: publicUrl
+            });
+
+            toast.dismiss(loadingToast);
+            toast.success('Profile photo updated!');
+        } catch (error: any) {
+            toast.dismiss(loadingToast);
+            toast.error(error.message || 'Failed to upload photo');
+        } finally {
+            setUploadingPhoto(false);
+        }
     };
 
     if (isLoading) {
@@ -104,12 +171,29 @@ export default function ProfilePage() {
                     {/* Profile Picture & Basic Info */}
                     <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 p-6 text-center">
                         <div className="relative w-24 h-24 mx-auto mb-4">
-                            <div className="w-24 h-24 bg-gradient-to-br from-teal-400 to-teal-600 rounded-full flex items-center justify-center text-3xl font-bold text-white">
-                                {profile?.full_name?.substring(0, 2).toUpperCase() || 'US'}
-                            </div>
-                            <button className="absolute bottom-0 right-0 p-2 bg-white dark:bg-gray-700 text-teal-600 dark:text-teal-400 rounded-full hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors shadow-md border border-gray-200 dark:border-gray-600">
+                            {profile?.avatar_url ? (
+                                <Image
+                                    src={profile.avatar_url}
+                                    alt={profile.full_name || 'Profile'}
+                                    width={96}
+                                    height={96}
+                                    className="w-24 h-24 rounded-full object-cover"
+                                />
+                            ) : (
+                                <div className="w-24 h-24 bg-gradient-to-br from-teal-400 to-teal-600 rounded-full flex items-center justify-center text-3xl font-bold text-white">
+                                    {profile?.full_name?.substring(0, 2).toUpperCase() || 'US'}
+                                </div>
+                            )}
+                            <label className="absolute bottom-0 right-0 p-2 bg-white dark:bg-gray-700 text-teal-600 dark:text-teal-400 rounded-full hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors shadow-md border border-gray-200 dark:border-gray-600 cursor-pointer">
                                 <Camera className="w-4 h-4" />
-                            </button>
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={handlePhotoUpload}
+                                    disabled={uploadingPhoto}
+                                    className="hidden"
+                                />
+                            </label>
                         </div>
                         <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
                             {profile?.full_name || 'User Name'}
