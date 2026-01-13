@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { useTheme } from 'next-themes';
+import { useQuery } from '@tanstack/react-query';
 import {
     LayoutDashboard,
     Package,
@@ -80,6 +81,13 @@ function DashboardSidebar() {
             submenu: []
         },
         {
+            id: 'notifications',
+            label: 'Notifications',
+            icon: Bell,
+            href: '/dashboard/notifications',
+            submenu: []
+        },
+        {
             id: 'profile',
             label: 'Profile',
             icon: UserCircle,
@@ -108,6 +116,13 @@ function DashboardSidebar() {
             label: 'Wishlist',
             icon: Heart,
             href: '/dashboard/wishlist',
+            submenu: []
+        },
+        {
+            id: 'notifications',
+            label: 'Notifications',
+            icon: Bell,
+            href: '/dashboard/notifications',
             submenu: []
         },
         {
@@ -211,6 +226,25 @@ function DashboardHeader() {
     const signOut = useSignOut();
     const { data: profile } = useProfile();
 
+    // Fetch unread notification count
+    const { data: unreadCount = 0 } = useQuery({
+        queryKey: ['unreadCount'],
+        queryFn: async () => {
+            const { supabase } = await import('@/lib/supabase');
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) return 0;
+
+            const { count } = await supabase
+                .from('notifications')
+                .select('*', { count: 'exact', head: true })
+                .eq('user_id', user.id)
+                .eq('read', false);
+
+            return count || 0;
+        },
+        refetchInterval: 30000, // Refresh every 30 seconds
+    });
+
     const handleSignOut = async () => {
         const loadingToast = toast.loading('Signing out...');
         try {
@@ -249,9 +283,17 @@ function DashboardHeader() {
                     >
                         <span className="font-medium text-sm">Explore</span>
                     </Link>
-                    <button className="p-2 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg">
+                    <Link
+                        href="/dashboard/notifications"
+                        className="relative p-2 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                    >
                         <Bell className="w-5 h-5" />
-                    </button>
+                        {unreadCount > 0 && (
+                            <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs font-bold rounded-full flex items-center justify-center">
+                                {unreadCount > 9 ? '9+' : unreadCount}
+                            </span>
+                        )}
+                    </Link>
                     <button
                         onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
                         className="p-2 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg"
